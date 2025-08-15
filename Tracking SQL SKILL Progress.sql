@@ -92,3 +92,60 @@ JOIN order_details od
 ON od.productid = p.productid
 GROUP BY c.categoryname 
 ORDER BY totalsales DESC;
+
+-- ###Northwind SQL Joins Mastery: 10 Realistic Challenges with Conditions--
+
+-- 29: Show OrderID, OrderDate, CustomerName, and EmployeeFullName for all orders placed after January 1, 1997, sorted by OrderDate descending.
+
+SELECT o.orderid, o.orderdate, c.companyname AS customername, e.firstname || ' '  || e.lastname AS EmployeeFullName
+FROM orders o
+JOIN customers c 
+ON c.customerid = o.customerid
+JOIN employees e 
+ON e.employeeid = o.employeeid
+WHERE o.orderdate > '1997-01-01'
+ORDER BY o.orderdate DESC;
+
+-- 30: Show ProductName, CompanyName AS supplier, and Country for products where the supplier is located in the USA, ordered by ProductName.
+
+SELECT p.productname, s.companyname AS Supplier, s.country
+FROM products p 
+JOIN suppliers s 
+ON p.supplierid = s.supplierid 
+WHERE s.country = 'USA'
+ORDER BY p.productname;
+
+-- 31: List OrderID, CustomerName, and ShipperName for all orders shipped by “United Package” for customers in Germany.
+
+SELECT o.orderid, c.companyname AS customername, o.shipname AS ShipperName
+FROM orders o
+JOIN customers c 
+ON c.customerid = o.customerid
+WHERE o.shipname = 'United Package'
+AND c.country = 'Germany';
+
+-- 32: Show CustomerName and OrderCount for customers who placed at least 1 order in 1997, including customers with zero orders (use outer join), ordered by OrderCount descending.
+
+SELECT c.companyname AS CustomerName, COUNT(o.orderid) AS Ordercount 
+FROM customers c 
+LEFT JOIN orders o 
+ON c.customerid = o.customerid
+AND EXTRACT(YEAR FROM o.orderdate) = 1997
+GROUP BY c.companyname 
+HAVING COUNT(o.orderid)>=0
+ORDER BY COUNT(o.orderid) DESC;
+
+-- 33: Join Products, OrderDetails, and Orders to list the top 5 products by total revenue (UnitPrice * Quantity) for orders in the last 12 months of data, ordered from highest to lowest.
+
+SELECT p.productname, SUM(od.unitprice * od.quantity) AS total_reveneu 
+FROM products p 
+JOIN order_details od 
+ON od.productid = p.productid
+JOIN orders o 
+ON od.orderid = o.orderid 
+WHERE o.orderdate >= ( 
+						SELECT MAX(orderdate) - INTERVAL '12 months'
+						FROM orders)
+GROUP BY p.productname 
+ORDER BY total_reveneu DESC
+LIMIT 5;
