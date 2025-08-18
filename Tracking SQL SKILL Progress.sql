@@ -149,3 +149,46 @@ WHERE o.orderdate >= (
 GROUP BY p.productname 
 ORDER BY total_reveneu DESC
 LIMIT 5;
+
+-- 34: Show OrderID, CustomerName, ShipperName, RequiredDate, and ShippedDate for orders shipped after the required date and where Freight > 50.
+
+SELECT o.orderid, c.companyname AS customername, o.shipname AS ShipperName, o.requireddate, o.shippeddate
+FROM orders o
+JOIN customers c 
+ON o.customerid = c.customerid
+WHERE o.shippeddate > o.requireddate AND
+o.freight >50;
+
+-- 35: For each CategoryName, list the total number of orders and total revenue from orders placed after July 1, 1996. Only include categories with more than 10 orders (HAVING clause).
+
+SELECT c.categoryname, COUNT(DISTINCT o.orderid) AS Total_Orders, SUM(od.unitprice * od.quantity) AS Total_Revenue
+FROM categories c 
+JOIN products p 
+ON c.categoryid = p.categoryid 
+JOIN order_details od 
+ON p.productid = od.productid 
+JOIN orders o 
+ON o.orderid = od.orderid 
+WHERE o.orderdate > DATE '1996-07-01'
+GROUP BY c.categoryname 
+HAVING COUNT(DISTINCT o.orderid) > 10
+ORDER BY total_revenue DESC;
+
+-- 36: List each employee’s FullName and the total number of orders they handled in 1997 for customers located in the USA, sorted by order count descending.
+
+SELECT e.firstname || ' '|| e.lastname AS FullName, count(DISTINCT o.orderid) AS total_orders
+FROM employees e 
+JOIN orders o 
+ON e.employeeid = o.employeeid 
+WHERE shipcountry = 'USA' 
+AND EXTRACT(YEAR FROM o.orderdate)=1997
+GROUP BY fullname 
+ORDER BY total_orders DESC;
+
+-- 37: List all CustomerNames who ordered products from the “Beverages” category in 1997, without duplicates.
+SELECT * FROM categories c;
+SELECT * FROM customers cu; 
+SELECT * FROM orders o;
+SELECT * FROM order_details od;
+SELECT * FROM products p;
+
