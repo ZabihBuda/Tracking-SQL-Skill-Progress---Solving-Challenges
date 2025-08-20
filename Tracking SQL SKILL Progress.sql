@@ -185,10 +185,19 @@ AND EXTRACT(YEAR FROM o.orderdate)=1997
 GROUP BY fullname 
 ORDER BY total_orders DESC;
 
--- 37: List all CustomerNames who ordered products from the “Beverages” category in 1997, without duplicates.
-SELECT * FROM categories c;
-SELECT * FROM customers cu; 
-SELECT * FROM orders o;
-SELECT * FROM order_details od;
-SELECT * FROM products p;
+-- 37: List all CustomerNames that start with the letter 'A'.
+SELECT companyname AS customername
+FROM customers
+WHERE companyname ~'^A';
+
+-- 38: Show ProductName, UnitPrice, and a new column PriceCategory: “Cheap” if UnitPrice < 20, “Moderate” if UnitPrice between 20 and 50, “Expensive” if UnitPrice > 50. Order by pricecategory.
+SELECT productname, unitprice, 
+		CASE 
+			WHEN unitprice <= 20 THEN 'Cheap'
+			WHEN unitprice > 20 AND unitprice <= 50 THEN 'Moderate'
+			ELSE 'Expensive'
+		END AS price_category
+FROM products
+ORDER BY price_category;
+
 
