@@ -200,4 +200,41 @@ SELECT productname, unitprice,
 FROM products
 ORDER BY price_category;
 
+/*-- 39: Amber’s conglomerate acquired several companies, each with a hierarchical structure. Query each company_code with its founder and
+ the total count of lead managers, senior managers, managers, and employees, sorted by company_code in ascending lexicographical order.*/
+
+ SELECT c.company_code, c.founder, count(DISTINCT lm.lead_manager_code), count(DISTINCT sm.senior_manager_code), count(DISTINCT m.manager_code), count(DISTINCT e.employee_code)
+FROM company AS c
+JOIN lead_manager AS lm
+ON c.company_code=lm.company_code
+JOIN senior_manager sm
+ON lm.company_code=sm.company_code
+JOIN manager as m
+oN sm.company_code=m.company_code
+JOIN employee AS e
+ON m.company_code=e.company_code
+GROUP BY c.COMPANY_CODE, c.FOUNDER 
+ORDER BY company_code ASC;
+
+
+/* -- 40:Generate a report with Name, Grade, and Mark by joining the Students and Grade tables. Show student
+ names for grades 8–10 ordered by descending grade and alphabetically for ties, and use 
+ NULL as the name for grades below 8, ordering those rows by descending grade and ascending marks for ties.*/
+
+SELECT 
+    CASE 
+        WHEN Grade >= 8 THEN s.Name
+        ELSE NULL
+    END AS Name,
+    g.Grade,
+    s.Marks
+FROM Students s 
+JOIN Grades g
+ON s.marks BETWEEN g.Min_Mark AND g.Max_Mark
+ORDER BY 
+    g.Grade DESC,
+    CASE 
+        WHEN Grade >= 8 THEN Name
+        ELSE Marks
+    END ASC;
 
