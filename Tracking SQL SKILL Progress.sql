@@ -263,3 +263,54 @@ SELECT
 FROM ranked_concerts_cte
 WHERE ranked_concerts = 1
 ORDER BY revenue_per_member DESC;
+
+                                      -- Northwind SQL Intermediate/Advanced Challenges --
+-- Filtering & Conditions Challenges
+
+-- 42: Orders in a specific range. Find all orders placed between January 1, 1997 and March 31, 1997, including OrderID, CustomerName, and OrderDate.
+
+SELECT o.orderid, c.companyname AS CustomerName, o.orderdate
+FROM orders o 
+JOIN customers c 
+ON o.customerid = c.customerid
+WHERE o.orderdate BETWEEN '1997-01-01' AND '1997-03-31';
+
+-- 42: Customers by pattern (regex. List customers whose names contain the word “Shop”. 
+SELECT companyname AS customername
+FROM customers
+WHERE companyname ~* 'shop';
+
+-- 43: Products in multiple conditions. Find products where UnitPrice > 30 AND UnitsInStock < 20.
+
+SELECT productname
+FROM products 
+WHERE unitprice > 30 AND unitsinstock < 20;
+
+-- 44: Suppliers from selected countries. Show suppliers from USA, UK, Germany, or France.
+
+SELECT companyname, country
+FROM suppliers
+WHERE country IN ('USA', 'UK', 'Germany', 'FRANCE');
+
+-- CASE Statements Challenges
+-- 45: Classify employees by hire year. List employees with a column HirePeriod that shows: “Early” if hired before 1993, “Mid” if hired between 1993 and 1996, “Recent” if hired after 1996.
+SELECT 
+	firstname || ' ' || lastname AS Full_Name,
+	CASE 
+		WHEN EXTRACT(YEAR FROM hiredate) < 1993 THEN 'Early'
+		WHEN EXTRACT(YEAR FROM hiredate) = 1993 THEN 'Mid'
+		ELSE 'Recent'
+	END AS HirePeriod 
+FROM employees e;
+
+-- 46: Product pricing tiers Show products with a column PriceTier: “Budget” (< 20), “Standard” (20–50), and “Premium” (> 50).
+SELECT 
+	productname,
+	unitprice,
+	CASE 
+		WHEN unitprice < 20 THEN 'Budget'
+		WHEN unitprice BETWEEN 20 AND 50 THEN 'Standard'
+		ELSE 'Premium'
+	END AS PriceTier
+FROM products
+ORDER BY pricetier;
