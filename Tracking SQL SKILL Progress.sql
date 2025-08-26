@@ -314,3 +314,31 @@ SELECT
 	END AS PriceTier
 FROM products
 ORDER BY pricetier;
+
+-- Aggregations
+
+-- 46: Sow each category’s average product price, floored with FLOOR(AVG(UnitPrice)). Only include categories where average price > 25.
+SELECT * FROM categories;
+SELECT * FROM products p;
+
+SELECT c.categoryname, floor((AVG(p.unitprice))) AS avg_price
+FROM categories c 
+JOIN products p 
+ON p.categoryid = c.categoryid 
+GROUP BY c.categoryname 
+HAVING AVG(p.unitprice ) > 25
+ORDER BY avg_price DESC;
+
+-- 47: For each shipper, calculate the average freight cost of orders, sorted descending.
+
+SELECT shipname AS shipper, ROUND(AVG(freight)) AS avg_frieght_cost
+FROM orders 
+GROUP BY shipname 
+ORDER BY AVG(freight) DESC;
+
+-- Subqueries
+
+-- 48: Find customers whose average order value is greater than the overall average order value.
+SELECT * FROM customers c;
+SELECT * FROM orders o ;
+SELECT * FROM order_details od ;
