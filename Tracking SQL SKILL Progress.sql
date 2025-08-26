@@ -318,8 +318,7 @@ ORDER BY pricetier;
 -- Aggregations
 
 -- 46: Sow each category’s average product price, floored with FLOOR(AVG(UnitPrice)). Only include categories where average price > 25.
-SELECT * FROM categories;
-SELECT * FROM products p;
+
 
 SELECT c.categoryname, floor((AVG(p.unitprice))) AS avg_price
 FROM categories c 
