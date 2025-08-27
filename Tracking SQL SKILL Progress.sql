@@ -319,7 +319,6 @@ ORDER BY pricetier;
 
 -- 46: Sow each category’s average product price, floored with FLOOR(AVG(UnitPrice)). Only include categories where average price > 25.
 
-
 SELECT c.categoryname, floor((AVG(p.unitprice))) AS avg_price
 FROM categories c 
 JOIN products p 
@@ -338,6 +337,28 @@ ORDER BY AVG(freight) DESC;
 -- Subqueries
 
 -- 48: Find customers whose average order value is greater than the overall average order value.
-SELECT * FROM customers c;
-SELECT * FROM orders o ;
-SELECT * FROM order_details od ;
+
+SELECT 
+	c.customerid,
+	c.companyname AS customername,
+	ROUND(AVG(od.unitprice * od.quantity)) AS Avg_order_value
+FROM customers c
+JOIN orders o
+ON c.customerid = o.customerid
+JOIN order_details od 
+ON o.orderid = od.orderid
+GROUP BY c.customerid , c.companyname 
+HAVING AVG(od.unitprice * od.quantity ) > (
+	SELECT AVG(cutomer_avg)
+	FROM (
+		SELECT AVG(od.unitprice * od.quantity) AS cutomer_avg
+		FROM orders o 
+		JOIN order_details od 
+		ON o.orderid = od.orderid 
+		GROUP BY o.customerid 
+		) sub
+) 
+ORDER BY avg_order_value ;
+	
+
+
