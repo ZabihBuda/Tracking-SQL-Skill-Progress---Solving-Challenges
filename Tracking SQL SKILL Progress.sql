@@ -360,5 +360,42 @@ HAVING AVG(od.unitprice * od.quantity ) > (
 ) 
 ORDER BY avg_order_value ;
 	
+-- 49: For each category, show the product with the highest UnitPrice.
 
+SELECT 
+	p.productid,
+	p.productname,
+	p.categoryid,
+	c.categoryname,
+	p.unitprice
+FROM products p 
+JOIN categories c 
+	ON p.categoryid = c.categoryid
+WHERE p.unitprice = (
+	SELECT MAX(p2.unitprice)
+	FROM products p2 
+	WHERE p2.categoryid = p.categoryid)
+ORDER BY c.categoryname;
 
+-- We can also solve this challenge with CTE and Window function;
+WITH RankedProducts AS (
+    SELECT 
+        p.ProductID,
+        p.ProductName,
+        p.CategoryID,
+        c.CategoryName,
+        p.UnitPrice,
+        RANK() OVER (PARTITION BY p.CategoryID ORDER BY p.UnitPrice DESC) AS PriceRank
+    FROM Products p
+    JOIN Categories c 
+      ON p.CategoryID = c.CategoryID
+)
+SELECT 
+    ProductID,
+    ProductName,
+    CategoryID,
+    CategoryName,
+    UnitPrice
+FROM RankedProducts
+WHERE PriceRank = 1
+ORDER BY CategoryName;
