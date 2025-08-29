@@ -399,3 +399,49 @@ SELECT
 FROM RankedProducts
 WHERE PriceRank = 1
 ORDER BY CategoryName;
+
+-- 50: List employees who handled more orders than the average employee.
+SELECT * FROM employees;
+SELECT * FROM orders o ;
+
+SELECT 
+	e.employeeid,
+	e.firstname || ' ' || e.lastname AS Fullname,
+	COUNT(o.orderid) AS number_of_orders
+FROM employees e 
+JOIN orders o 
+	ON e.employeeid = o.employeeid
+GROUP BY e.employeeid
+HAVING COUNT(o.orderid) > (
+						SELECT AVG(order_per_employee.COUNT) 
+						FROM (
+							SELECT COUNT(orderid) AS count 
+							FROM orders 
+							GROUP BY employeeid
+							) AS order_per_employee)
+ORDER BY e.employeeid;
+
+-- solving the challenge using CTE:
+WITH employee_order_counts AS (
+    SELECT
+        e.employeeid,
+        e.firstname || ' ' || e.lastname AS fullname,
+        COUNT(o.orderid) AS number_of_orders
+    FROM employees e 
+    JOIN orders o 
+        ON e.employeeid = o.employeeid
+    GROUP BY e.employeeid, e.firstname, e.lastname
+),
+average_orders AS (
+    SELECT 
+        AVG(number_of_orders) AS avg_number_of_orders
+    FROM employee_order_counts
+)
+SELECT 
+    e.employeeid, 
+    e.fullname,
+    e.number_of_orders
+FROM employee_order_counts e
+CROSS JOIN average_orders a
+WHERE e.number_of_orders > a.avg_number_of_orders
+ORDER BY e.number_of_orders DESC;
