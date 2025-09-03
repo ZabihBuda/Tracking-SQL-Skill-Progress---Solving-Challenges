@@ -450,19 +450,21 @@ ORDER BY e.number_of_orders DESC;
 
 WITH monthly_sales AS (
 	SELECT 
-		DATE_PART('year', o.orderdate) AS order_year,
-		DATE_PART('month', o.orderdate) AS order_month,
+		EXTRACT(YEAR FROM o.orderdate) AS order_year,
+		EXTRACT(MONTH FROM o.orderdate) AS order_month,
 		ROUND(SUM(od.unitprice * od.quantity)) AS monthly_revenue
-	FROM orders o
-	JOIN order_details od
-		ON o.orderid = od.orderid
-	GROUP BY DATE_PART('year', o.orderdate), DATE_PART('month', o.orderdate)
+	FROM orders o 
+	JOIN order_details od 
+	ON o.orderid = od.orderid
+	GROUP BY EXTRACT(YEAR FROM o.orderdate), EXTRACT(MONTH FROM o.orderdate)
 )
-SELECT 
-	order_year,
+SELECT 	
+	order_year, 
 	order_month,
 	monthly_revenue,
-	SUM(monthly_revenue) OVER(
-		ORDER BY order_year, order_month) AS cumulative_revenue
+	SUM(monthly_revenue) OVER (
+		ORDER BY order_year, order_month) AS comulative_revenue
 FROM monthly_sales
 ORDER BY order_year, order_month;
+
+
