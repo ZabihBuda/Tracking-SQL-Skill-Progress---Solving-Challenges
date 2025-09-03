@@ -445,3 +445,24 @@ FROM employee_order_counts e
 CROSS JOIN average_orders a
 WHERE e.number_of_orders > a.avg_number_of_orders
 ORDER BY e.number_of_orders DESC;
+
+-- 51: calculate cumulative revenue per month.
+
+WITH monthly_sales AS (
+	SELECT 
+		DATE_PART('year', o.orderdate) AS order_year,
+		DATE_PART('month', o.orderdate) AS order_month,
+		ROUND(SUM(od.unitprice * od.quantity)) AS monthly_revenue
+	FROM orders o
+	JOIN order_details od
+		ON o.orderid = od.orderid
+	GROUP BY DATE_PART('year', o.orderdate), DATE_PART('month', o.orderdate)
+)
+SELECT 
+	order_year,
+	order_month,
+	monthly_revenue,
+	SUM(monthly_revenue) OVER(
+		ORDER BY order_year, order_month) AS cumulative_revenue
+FROM monthly_sales
+ORDER BY order_year, order_month;
