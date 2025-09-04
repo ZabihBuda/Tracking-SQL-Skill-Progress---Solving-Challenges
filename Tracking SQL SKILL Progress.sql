@@ -467,4 +467,39 @@ SELECT
 FROM monthly_sales
 ORDER BY order_year, order_month;
 
+-- 52: rank customers by total revenue and return the top 5.
+
+SELECT 
+	c.customerid, 
+	c.companyname,
+	ROUND(SUM(od.unitprice * od.quantity)) AS total_revenue
+FROM customers c 
+JOIN orders o 
+	ON c.customerid = o.customerid
+JOIN order_details od 
+	ON o.orderid = od.orderid
+GROUP BY c.customerid
+ORDER BY SUM(od.unitprice * od.quantity) DESC 
+LIMIT 5;
+
+-- Using CTE with the same result
+WITH top_customers AS (
+	SELECT 
+		customerid,
+		companyname
+	FROM customers
+)
+SELECT 
+	tc.customerid,
+	tc.companyname,
+	RANK() OVER (ORDER BY SUM(od.unitprice * od.quantity) DESC) AS revenue_rank
+FROM top_customers tc
+JOIN orders o 
+	ON o.customerid = tc.customerid 
+JOIN order_details od 
+	ON o.orderid = od.orderid
+GROUP BY tc.customerid, tc.companyname 
+LIMIT 5;
+	
+
 
