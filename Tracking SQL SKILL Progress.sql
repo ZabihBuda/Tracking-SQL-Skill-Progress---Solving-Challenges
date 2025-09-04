@@ -482,7 +482,7 @@ GROUP BY c.customerid
 ORDER BY SUM(od.unitprice * od.quantity) DESC 
 LIMIT 5;
 
--- Using CTE with the same result
+-- Using CTE with window function to get the same result
 WITH top_customers AS (
 	SELECT 
 		customerid,
