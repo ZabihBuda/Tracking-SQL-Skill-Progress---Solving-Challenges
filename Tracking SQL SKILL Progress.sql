@@ -501,5 +501,39 @@ JOIN order_details od
 GROUP BY tc.customerid, tc.companyname 
 LIMIT 5;
 	
+/* 53: Orders with revenue buckets
+Use a CTE + CASE to classify orders into:
+
+“Small” (< 1000)
+
+“Medium” (1000–5000)
+
+“Large” (> 5000)*/
+
+WITH order_revenue AS (
+	SELECT 
+		o.orderid,
+		c.customerid,
+		c.companyname,
+		ROUND(SUM(od.unitprice * quantity)) AS revenue
+	FROM customers c
+	JOIN orders o 
+		ON o.customerid = c.customerid
+	JOIN order_details od 
+		ON o.orderid = od.orderid
+	GROUP BY o.orderid, c.customerid, c.companyname 
+	ORDER BY SUM(od.unitprice * quantity) DESC
+)
+SELECT 
+	orderid,
+	customerid,
+	companyname,
+	CASE 
+		WHEN revenue < 1000 THEN 'Small'
+		WHEN revenue >= 1000 AND revenue <= 5000 THEN 'Medium'
+		ELSE 'Large'
+	END AS reveneu_categories
+FROM order_revenue;
+	
 
 
