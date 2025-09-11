@@ -535,5 +535,28 @@ SELECT
 	END AS reveneu_categories
 FROM order_revenue;
 	
+/* 54: Late orders by category
+Show categories where at least one order was shipped after the required date,
+including CategoryName, TotalLateOrders.*/
+
+
+SELECT 
+	ca.categoryname, 
+	COUNT(DISTINCT o.orderid) AS total_late_orders
+FROM categories ca 
+JOIN products p 
+	ON ca.categoryid = p.categoryid
+JOIN order_details od 
+	ON p.productid = od.productid 
+JOIN orders o 
+	ON od.orderid = o.orderid
+WHERE o.shippeddate > o.requireddate 
+GROUP BY ca.categoryname
+HAVING COUNT(DISTINCT o.orderid)>0
+ORDER BY total_late_orders DESC;
+	
+
+
+
 
 
