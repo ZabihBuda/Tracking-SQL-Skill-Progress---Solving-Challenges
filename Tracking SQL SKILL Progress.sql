@@ -554,8 +554,25 @@ WHERE o.shippeddate > o.requireddate
 GROUP BY ca.categoryname
 HAVING COUNT(DISTINCT o.orderid)>0
 ORDER BY total_late_orders DESC;
-	
 
+/*Assume you're given a table Twitter tweet data, write a query to obtain a histogram of tweets posted per 
+ * user in 2022. Output the tweet count per user as the bucket and the number of Twitter users who fall into that bucket.
+
+In other words, group the users by the number of tweets they posted in 2022 and count the number of users in each group.*/
+	
+SELECT 
+  tweet_count AS tweet_bucket,
+  COUNT(*) AS users_num
+FROM (
+  SELECT 
+    user_id,
+    COUNT(*) AS tweet_count
+  FROM tweets
+  WHERE EXTRACT(YEAR FROM tweet_date) = 2022
+  GROUP BY user_id
+) AS user_tweet_counts
+GROUP BY tweet_count
+ORDER BY tweet_bucket;
 
 
 
