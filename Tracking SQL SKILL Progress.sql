@@ -555,7 +555,7 @@ GROUP BY ca.categoryname
 HAVING COUNT(DISTINCT o.orderid)>0
 ORDER BY total_late_orders DESC;
 
-/*Assume you're given a table Twitter tweet data, write a query to obtain a histogram of tweets posted per 
+/* 55: Assume you're given a table Twitter tweet data, write a query to obtain a histogram of tweets posted per 
  * user in 2022. Output the tweet count per user as the bucket and the number of Twitter users who fall into that bucket.
 
 In other words, group the users by the number of tweets they posted in 2022 and count the number of users in each group.*/
@@ -574,6 +574,23 @@ FROM (
 GROUP BY tweet_count
 ORDER BY tweet_bucket;
 
+/* 56: Given a table of Facebook posts, for each user who posted at least twice in 2021, write a query
+  to find the number of days between each user’s first post of the year and last post of the year 
+ in the year 2021. Output the user and number of the days between each user's first and last post.*/
+WITH date_col AS (
+  SELECT
+    user_id,
+    post_date::DATE AS dates,
+    post_id
+  FROM posts
+)
 
+SELECT 
+  user_id,
+  MAX(dates) - MIN(dates) AS days_between
+FROM date_col
+WHERE EXTRACT(YEAR FROM dates) = 2021
+GROUP BY user_id
+HAVING COUNT(post_id)>1;
 
 
