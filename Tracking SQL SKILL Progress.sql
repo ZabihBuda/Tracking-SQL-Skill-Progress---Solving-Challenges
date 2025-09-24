@@ -607,4 +607,25 @@ GROUP BY sender_id
 ORDER BY COUNT(sender_id) DESC
 LIMIT 2;
 
+/* Given a table containing information about bank deposits and withdrawals made using Paypal, write 
+ * a query to retrieve the final account balance for each account, taking into account all the 
+ * transactions recorded in the table with the assumption that there are no missing transactions.*/
+WITH deposits AS (
+  SELECT account_id, sum(amount) as amount FROM transactions
+  WHERE transaction_type = 'Deposit'
+  GROUP BY account_id),
+
+withdrawals AS (
+  SELECT account_id, sum(amount) as amount FROM transactions
+  WHERE transaction_type = 'Withdrawal'
+  GROUP BY account_id)
+  
+SELECT 
+  d.account_id,
+  (d.amount) - (w.amount) AS final_balance
+FROM deposits as d
+JOIN withdrawals as w
+ON d.account_id = w.account_id
+GROUP BY d.account_id, d.amount, w.amount
+;
 
