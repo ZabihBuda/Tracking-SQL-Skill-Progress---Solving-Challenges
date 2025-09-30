@@ -607,7 +607,7 @@ GROUP BY sender_id
 ORDER BY COUNT(sender_id) DESC
 LIMIT 2;
 
-/* Given a table containing information about bank deposits and withdrawals made using Paypal, write 
+/* 58: Given a table containing information about bank deposits and withdrawals made using Paypal, write 
  * a query to retrieve the final account balance for each account, taking into account all the 
  * transactions recorded in the table with the assumption that there are no missing transactions.*/
 WITH deposits AS (
@@ -629,7 +629,7 @@ ON d.account_id = w.account_id
 GROUP BY d.account_id, d.amount, w.amount
 ;
 
-/* Assume you have an events table on Facebook app analytics. Write a query to calculate the click-through rate (CTR) 
+/* 59: Assume you have an events table on Facebook app analytics. Write a query to calculate the click-through rate (CTR) 
  * for the app in 2022 and round the results to 2 decimal places.
 
 Definition and note:
@@ -647,7 +647,7 @@ WHERE timestamp >= '2022-01-01'
   AND timestamp < '2023-01-01'
 GROUP BY app_id;
 
-/*Assume you're given tables with information about TikTok user sign-ups and confirmations through 
+/* 60: Assume you're given tables with information about TikTok user sign-ups and confirmations through 
  * email and text. New users on TikTok sign up using their email addresses, and upon sign-up, each user 
  * receives a text message confirmation to activate their account.
 
@@ -661,3 +661,31 @@ INNER JOIN texts t
 ON e.email_id = t.email_id
 WHERE t.signup_action = 'Confirmed'
 AND t.action_date =  e.signup_date + INTERVAL '1 day';
+
+/* 61:IBM is analyzing how their employees are utilizing the Db2 database by tracking the SQL queries executed by their employees. 
+ * The objective is to generate data to populate a histogram that shows the number of unique queries run by employees 
+ * during the third quarter of 2023 (July to September). Additionally, it should count the number of employees who did not 
+ * run any queries during this period.
+
+Display the number of unique queries as histogram categories, along with the count of employees who executed that 
+number of unique queries.*/
+
+WITH employee_queries AS (
+  SELECT 
+    e.employee_id,
+    COALESCE(COUNT(DISTINCT q.query_id), 0) AS unique_queries
+  FROM employees AS e
+  LEFT JOIN queries AS q
+    ON e.employee_id = q.employee_id
+      AND q.query_starttime >= '2023-07-01T00:00:00Z'
+      AND q.query_starttime < '2023-10-01T00:00:00Z'
+  GROUP BY e.employee_id
+)
+
+SELECT
+  unique_queries,
+  COUNT(employee_id) AS employee_count
+FROM employee_queries
+GROUP BY unique_queries
+ORDER BY unique_queries;
+
