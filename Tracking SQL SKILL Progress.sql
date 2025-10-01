@@ -689,3 +689,38 @@ FROM employee_queries
 GROUP BY unique_queries
 ORDER BY unique_queries;
 
+/* 62: Your team at JPMorgan Chase is preparing to launch a new credit card, and to gain some insights, 
+ * you're analyzing how many credit cards were issued each month.
+
+Write a query that outputs the name of each credit card and the difference in the number of issued cards 
+between the month with the highest issuance cards and the lowest issuance. Arrange the results based on the largest disparity. */
+
+WITH flex AS (
+  SELECT 
+    card_name,
+    MAX(issued_amount) - MIN(issued_amount) AS difference
+  FROM monthly_cards_issued
+  WHERE card_name = 'Chase Freedom Flex'
+  GROUP BY card_name
+), 
+
+reserve AS (
+  SELECT 
+    card_name,
+    MAX(issued_amount) - MIN(issued_amount) AS difference
+  FROM monthly_cards_issued
+  WHERE card_name = 'Chase Sapphire Reserve'
+  GROUP BY card_name
+)
+
+SELECT 
+  card_name, 
+  difference
+FROM reserve
+UNION ALL 
+SELECT 
+  card_name,
+  difference
+FROM flex
+
+
