@@ -721,6 +721,20 @@ UNION ALL
 SELECT 
   card_name,
   difference
-FROM flex
+FROM flex;
 
+/* 63: You're trying to find the mean number of items per order on Alibaba, rounded to 1 decimal place using 
+ * tables which includes information on the count of items in each order (item_count table) and the 
+ * corresponding number of orders for each item count (order_occurrences table).*/
+
+WITH orders AS (
+  SELECT 
+    SUM(item_count * order_occurrences) as total_items,
+    SUM(order_occurrences) total_orders
+  FROM items_per_order
+) 
+
+SELECT 
+  ROUND(CAST(total_items AS DECIMAL)/total_orders, 1) AS mean
+FROM orders;
 
