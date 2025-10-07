@@ -738,7 +738,7 @@ SELECT
   ROUND(CAST(total_items AS DECIMAL)/total_orders, 1) AS mean
 FROM orders;
 
-/* CVS Health is analyzing its pharmacy sales data, and how well different products are selling in the market. 
+/* 64: CVS Health is analyzing its pharmacy sales data, and how well different products are selling in the market. 
  * Each drug is exclusively manufactured by a single manufacturer.
 
 Write a query to identify the manufacturers associated with the drugs that resulted in losses for CVS Health and 
@@ -755,4 +755,21 @@ FROM pharmacy_sales
 WHERE total_sales - cogs <= 0
 GROUP BY manufacturer
 ORDER BY total_loss DESC;
+
+/* 65: CVS Health wants to gain a clearer understanding of its pharmacy sales and the performance of various products.
+
+Write a query to calculate the total drug sales for each manufacturer. Round the answer to the nearest million and
+ report your results 
+in descending order of total sales. In case of any duplicates, sort them alphabetically by the manufacturer name.
+
+Since this data will be displayed on a dashboard viewed by business stakeholders, please format your results as 
+follows: "$36 million".*/
+
+SELECT 
+  manufacturer,
+  concat('$' , round(SUM(total_sales/1000000)) , ' million') AS sales
+FROM pharmacy_sales
+GROUP BY manufacturer
+ORDER BY SUM(total_sales) DESC, manufacturer;
+
 
