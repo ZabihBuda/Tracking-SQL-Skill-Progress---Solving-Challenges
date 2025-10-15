@@ -772,4 +772,22 @@ FROM pharmacy_sales
 GROUP BY manufacturer
 ORDER BY SUM(total_sales) DESC, manufacturer;
 
+-- 66: Write a query to obtain the third transaction of every user. Output the user id, spend and transaction date.
+WITH user_transaction AS (
+  SELECT 
+    user_id, 
+    spend,
+    transaction_date,
+    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY transaction_date) AS rn 
+  FROM transactions
+)
+
+SELECT 
+  user_id,
+  spend,
+  transaction_date
+FROM user_transaction
+WHERE 
+  rn = 3;
+
 
