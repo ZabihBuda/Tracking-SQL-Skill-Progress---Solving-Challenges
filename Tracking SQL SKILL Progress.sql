@@ -800,7 +800,7 @@ FROM employee
 ORDER BY salary DESC
 LIMIT 1 OFFSET 1;
 
-/* Given a table of tweet data over a specified time period, calculate the 3-day rolling average of tweets for each user. Output the user ID, tweet date, and rolling averages rounded to 2 decimal places.
+/* 68: Given a table of tweet data over a specified time period, calculate the 3-day rolling average of tweets for each user. Output the user ID, tweet date, and rolling averages rounded to 2 decimal places.
 
 Notes:
 
@@ -816,4 +816,28 @@ select
     ROWS BETWEEN 2 PRECEDING AND CURRENT ROW),2) as rolling_avg_2d
 FROM tweets;
 
+/*69: Assume you're given a table containing data on Amazon customers and their spending on products in different 
+ * category, write a query to identify the top two highest-grossing products within each category in the year 2022.
+ *  The output should include the category, product, and total spend. */
 
+
+WITH ranked_spending AS (
+  SELECT 
+    category,
+    product,
+    SUM(spend) AS total_spend,
+    RANK() OVER (
+    PARTITION BY category
+    ORDER BY SUM(spend) DESC) AS ranking
+  FROM product_spend
+  WHERE EXTRACT(YEAR FROM transaction_date) = 2022
+  GROUP BY category, product
+)
+
+SELECT 
+  category,
+  product,
+  total_spend
+FROM ranked_spending
+WHERE ranking <=2
+ORDER BY category, ranking
